@@ -2,6 +2,19 @@ from django.db import models
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 
+class CustomUserManager(BaseUserManager):
+
+    def create_user(self, email, password, **extra_fields):
+
+        if not email:
+            raise ValueError('Email is mandatory')
+        # if not username:
+        #     raise ValueError('Users must have a username')
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save()
+        return user
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField('email address', unique=True)
